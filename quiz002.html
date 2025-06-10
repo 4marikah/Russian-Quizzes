@@ -1,99 +1,134 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Квиз002: местоимения + есть</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; background: #f0f8ff; }
-    h1 { font-size: 24px; }
-    .question { margin-bottom: 24px; }
-    .options button {
-      display: block;
-      margin: 6px 0;
-      padding: 10px;
-      width: 100%;
-      font-size: 16px;
-    }
-    .correct { background-color: #c8e6c9; }
-    .incorrect { background-color: #ffcdd2; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Квиз002: иметь + иконки + повтор + оценка</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; background: #f7fafc; }
+  h1 { font-size: 24px; margin-bottom: 20px; }
+  .question { margin-bottom: 24px; }
+  .options button {
+    display: block;
+    margin: 6px 0;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .correct { background-color: #c8e6c9; }
+  .incorrect { background-color: #ffcdd2; }
+  #retry-btn {
+    margin-top: 20px;
+    padding: 12px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    display: none;
+  }
+  #result {
+    margin-top: 30px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+</style>
 </head>
 <body>
-  <h1>Quiz: "У меня есть ..."</h1>
+  <h1>Квиз002: иметь + иконки + повтор + оценка</h1>
+  <div id="quiz-container"></div>
+  <button id="retry-btn">Повторить</button>
+  <div id="result"></div>
 
-  <div class="question">
-    <p>🙋 _____ книга.</p>
-    <div class="options">
-      <button onclick="check(this, true)">У меня есть</button>
-      <button onclick="check(this, false)">У них есть</button>
-      <button onclick="check(this, false)">У неё есть</button>
-    </div>
-  </div>
+<script>
+  const questions = [
+    { prompt: "🙋 _____ книга 📚.", options: [{text: "У меня есть", isCorrect: true}, {text: "У них есть", isCorrect: false}, {text: "У неё есть", isCorrect: false}] },
+    { prompt: "👈 _____ телефон 📱.", options: [{text: "У него есть", isCorrect: false}, {text: "У тебя есть", isCorrect: true}, {text: "У нас есть", isCorrect: false}] },
+    { prompt: "🧑‍🤝‍🧑 _____ дом 🏠.", options: [{text: "У них есть", isCorrect: true}, {text: "У меня есть", isCorrect: false}, {text: "У неё есть", isCorrect: false}] },
+    { prompt: "🫵 _____ билеты 🎟️.", options: [{text: "У нас есть", isCorrect: false}, {text: "У вас есть", isCorrect: true}, {text: "У него есть", isCorrect: false}] },
+    { prompt: "👦 _____ мяч ⚽.", options: [{text: "У меня есть", isCorrect: false}, {text: "У него есть", isCorrect: true}, {text: "У нас есть", isCorrect: false}] },
+    { prompt: "👧 _____ сумка 👜.", options: [{text: "У неё есть", isCorrect: true}, {text: "У меня есть", isCorrect: false}, {text: "У тебя есть", isCorrect: false}] },
+    { prompt: "🙋 _____ книга 📖.", options: [{text: "У меня есть", isCorrect: true}, {text: "У вас есть", isCorrect: false}, {text: "У них есть", isCorrect: false}] },
+    { prompt: "👈 _____ очки 🕶️.", options: [{text: "У тебя есть", isCorrect: true}, {text: "У нас есть", isCorrect: false}, {text: "У неё есть", isCorrect: false}] },
+    { prompt: "🧑‍🤝‍🧑 _____ ключи 🔑.", options: [{text: "У них есть", isCorrect: true}, {text: "У меня есть", isCorrect: false}, {text: "У него есть", isCorrect: false}] },
+    { prompt: "🫵 _____ документы 📄.", options: [{text: "У вас есть", isCorrect: true}, {text: "У него есть", isCorrect: false}, {text: "У меня есть", isCorrect: false}] }
+  ];
 
-  <div class="question">
-    <p>👈 _____ телефон.</p>
-    <div class="options">
-      <button onclick="check(this, false)">У него есть</button>
-      <button onclick="check(this, true)">У тебя есть</button>
-      <button onclick="check(this, false)">У нас есть</button>
-    </div>
-  </div>
+  const totalQuestions = 5;
+  let score = 0;
+  let answeredCount = 0;
 
-  <div class="question">
-    <p>🧑‍🤝‍🧑 _____ дом.</p>
-    <div class="options">
-      <button onclick="check(this, true)">У них есть</button>
-      <button onclick="check(this, false)">У меня есть</button>
-      <button onclick="check(this, false)">У неё есть</button>
-    </div>
-  </div>
-
-  <div class="question">
-    <p>🫵 _____ билеты.</p>
-    <div class="options">
-      <button onclick="check(this, false)">У нас есть</button>
-      <button onclick="check(this, true)">У вас есть</button>
-      <button onclick="check(this, false)">У него есть</button>
-    </div>
-  </div>
-
-  <div class="question">
-    <p>👧 _____ кукла.</p>
-    <div class="options">
-      <button onclick="check(this, true)">У неё есть</button>
-      <button onclick="check(this, false)">У него есть</button>
-      <button onclick="check(this, false)">У тебя есть</button>
-    </div>
-  </div>
-
-  <div class="question">
-    <p>👦 _____ мяч.</p>
-    <div class="options">
-      <button onclick="check(this, false)">У меня есть</button>
-      <button onclick="check(this, true)">У него есть</button>
-      <button onclick="check(this, false)">У нас есть</button>
-    </div>
-  </div>
-
-  <div class="question">
-    <p>👫 _____ велосипед.</p>
-    <div class="options">
-      <button onclick="check(this, false)">У тебя есть</button>
-      <button onclick="check(this, true)">У нас есть</button>
-      <button onclick="check(this, false)">У неё есть</button>
-    </div>
-  </div>
-
-  <script>
-    function check(button, isCorrect) {
-      const buttons = button.parentElement.querySelectorAll("button");
-      buttons.forEach(btn => {
-        btn.disabled = true;
-        btn.classList.remove("correct", "incorrect");
-      });
-      button.classList.add(isCorrect ? "correct" : "incorrect");
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
     }
-  </script>
+    return array;
+  }
+
+  function generateQuiz() {
+    score = 0;
+    answeredCount = 0;
+    document.getElementById("result").textContent = "";
+    document.getElementById("retry-btn").style.display = "none";
+
+    const container = document.getElementById("quiz-container");
+    container.innerHTML = "";
+
+    const shuffledQuestions = shuffle([...questions]).slice(0, totalQuestions);
+
+    shuffledQuestions.forEach((q, index) => {
+      const div = document.createElement("div");
+      div.className = "question";
+
+      const p = document.createElement("p");
+      p.textContent = q.prompt;
+      div.appendChild(p);
+
+      const optionsDiv = document.createElement("div");
+      optionsDiv.className = "options";
+
+      const shuffledOptions = shuffle([...q.options]);
+      shuffledOptions.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = opt.text;
+        btn.onclick = () => {
+          if (btn.disabled) return; // предотвратить повторный клик
+          // Заблокировать все кнопки вопроса
+          Array.from(optionsDiv.children).forEach(b => b.disabled = true);
+          if (opt.isCorrect) {
+            btn.classList.add("correct");
+            score++;
+          } else {
+            btn.classList.add("incorrect");
+          }
+          answeredCount++;
+          // После ответов на все вопросы показать результат
+          if (answeredCount === totalQuestions) {
+            showResult();
+          }
+        };
+        optionsDiv.appendChild(btn);
+      });
+
+      div.appendChild(optionsDiv);
+      container.appendChild(div);
+    });
+  }
+
+  function showResult() {
+    const resultDiv = document.getElementById("result");
+    const percent = (score / totalQuestions) * 100;
+    if (percent >= 80) {
+      resultDiv.textContent = `Отличная работа! Вы ответили правильно на ${score} из ${totalQuestions}. Можно двигаться дальше.`;
+    } else {
+      resultDiv.textContent = `Вы ответили правильно на ${score} из ${totalQuestions}. Попробуйте повторить, чтобы улучшить результат.`;
+    }
+    document.getElementById("retry-btn").style.display = "inline-block";
+  }
+
+  document.getElementById("retry-btn").onclick = generateQuiz;
+
+  // Запуск
+  generateQuiz();
+</script>
 </body>
 </html>
