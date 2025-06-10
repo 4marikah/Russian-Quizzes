@@ -1,2 +1,2 @@
-# Russian-Quizzes-
+# Russian-Quizzes
 Russian Language studies 
