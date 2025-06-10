@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Квиз002: иметь + иконки + повтор + оценка</title>
+<title>Квиз01: "У меня есть.."</title>
 <style>
   body { font-family: sans-serif; padding: 20px; background: #f7fafc; }
   h1 { font-size: 24px; margin-bottom: 20px; }
@@ -25,6 +25,10 @@
     cursor: pointer;
     display: none;
   }
+  #progress {
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
   #result {
     margin-top: 30px;
     font-size: 20px;
@@ -33,29 +37,44 @@
 </style>
 </head>
 <body>
-  <h1>Квиз002: иметь + иконки + повтор + оценка</h1>
+  <h1>Квиз: иметь + местоимения + прогресс + 3 раунда</h1>
+  <div id="progress"></div>
   <div id="quiz-container"></div>
-  <button id="retry-btn">Повторить</button>
+  <button id="retry-btn">Следующий раунд</button>
   <div id="result"></div>
 
 <script>
-  const questions = [
-    { prompt: "🙋 _____ книга 📚.", options: [{text: "У меня есть", isCorrect: true}, {text: "У них есть", isCorrect: false}, {text: "У неё есть", isCorrect: false}] },
-    { prompt: "👈 _____ телефон 📱.", options: [{text: "У него есть", isCorrect: false}, {text: "У тебя есть", isCorrect: true}, {text: "У нас есть", isCorrect: false}] },
-    { prompt: "🧑‍🤝‍🧑 _____ дом 🏠.", options: [{text: "У них есть", isCorrect: true}, {text: "У меня есть", isCorrect: false}, {text: "У неё есть", isCorrect: false}] },
-    { prompt: "🫵 _____ билеты 🎟️.", options: [{text: "У нас есть", isCorrect: false}, {text: "У вас есть", isCorrect: true}, {text: "У него есть", isCorrect: false}] },
-    { prompt: "👦 _____ мяч ⚽.", options: [{text: "У меня есть", isCorrect: false}, {text: "У него есть", isCorrect: true}, {text: "У нас есть", isCorrect: false}] },
-    { prompt: "👧 _____ сумка 👜.", options: [{text: "У неё есть", isCorrect: true}, {text: "У меня есть", isCorrect: false}, {text: "У тебя есть", isCorrect: false}] },
-    { prompt: "🙋 _____ книга 📖.", options: [{text: "У меня есть", isCorrect: true}, {text: "У вас есть", isCorrect: false}, {text: "У них есть", isCorrect: false}] },
-    { prompt: "👈 _____ очки 🕶️.", options: [{text: "У тебя есть", isCorrect: true}, {text: "У нас есть", isCorrect: false}, {text: "У неё есть", isCorrect: false}] },
-    { prompt: "🧑‍🤝‍🧑 _____ ключи 🔑.", options: [{text: "У них есть", isCorrect: true}, {text: "У меня есть", isCorrect: false}, {text: "У него есть", isCorrect: false}] },
-    { prompt: "🫵 _____ документы 📄.", options: [{text: "У вас есть", isCorrect: true}, {text: "У него есть", isCorrect: false}, {text: "У меня есть", isCorrect: false}] }
+  // Местоимения с иконками и правильными формами
+  const pronouns = [
+    {icon: "🙋", text: "У меня есть"},
+    {icon: "👈", text: "У тебя есть"},
+    {icon: "🫵", text: "У вас есть"},
+    {icon: "👫", text: "У нас есть"},
+    {icon: "👦", text: "У него есть"},
+    {icon: "👧", text: "У неё есть"},
+    {icon: "🧑‍🤝‍🧑", text: "У них есть"},
   ];
 
-  const totalQuestions = 5;
-  let score = 0;
-  let answeredCount = 0;
+  // Существительные с иконками (пример)
+  const nouns = [
+    {noun: "книга", icon: "📚"},
+    {noun: "телефон", icon: "📱"},
+    {noun: "дом", icon: "🏠"},
+    {noun: "билеты", icon: "🎟️"},
+    {noun: "мяч", icon: "⚽"},
+    {noun: "сумка", icon: "👜"},
+    {noun: "очки", icon: "🕶️"},
+    {noun: "ключи", icon: "🔑"},
+    {noun: "документы", icon: "📄"},
+    {noun: "книга", icon: "📖"},
+  ];
 
+  const totalRounds = 3;
+  let currentRound = 1;
+  let currentQuestionIndex = 0;
+  let score = 0;
+
+  // Перемешать массив
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -64,71 +83,136 @@
     return array;
   }
 
-  function generateQuiz() {
-    score = 0;
-    answeredCount = 0;
-    document.getElementById("result").textContent = "";
-    document.getElementById("retry-btn").style.display = "none";
-
-    const container = document.getElementById("quiz-container");
-    container.innerHTML = "";
-
-    const shuffledQuestions = shuffle([...questions]).slice(0, totalQuestions);
-
-    shuffledQuestions.forEach((q, index) => {
-      const div = document.createElement("div");
-      div.className = "question";
-
-      const p = document.createElement("p");
-      p.textContent = q.prompt;
-      div.appendChild(p);
-
-      const optionsDiv = document.createElement("div");
-      optionsDiv.className = "options";
-
-      const shuffledOptions = shuffle([...q.options]);
-      shuffledOptions.forEach(opt => {
-        const btn = document.createElement("button");
-        btn.textContent = opt.text;
-        btn.onclick = () => {
-          if (btn.disabled) return; // предотвратить повторный клик
-          // Заблокировать все кнопки вопроса
-          Array.from(optionsDiv.children).forEach(b => b.disabled = true);
-          if (opt.isCorrect) {
-            btn.classList.add("correct");
-            score++;
-          } else {
-            btn.classList.add("incorrect");
-          }
-          answeredCount++;
-          // После ответов на все вопросы показать результат
-          if (answeredCount === totalQuestions) {
-            showResult();
-          }
-        };
-        optionsDiv.appendChild(btn);
-      });
-
-      div.appendChild(optionsDiv);
-      container.appendChild(div);
+  // Создаём вопросы для раунда - каждый раз новая выборка существительных и порядок вариантов
+  function createQuestions() {
+    // Берём 7 случайных существительных без повторов (если меньше 7 - дублируем)
+    let chosenNouns = shuffle([...nouns]).slice(0, 7);
+    if (chosenNouns.length < 7) {
+      // дублируем с начала, если нужно
+      chosenNouns = chosenNouns.concat(chosenNouns.slice(0, 7 - chosenNouns.length));
+    }
+    // Для каждого местоимения создаём вопрос с соответствующим существительным
+    return pronouns.map((pron, i) => {
+      // Варианты - все местоимения в перемешанном порядке
+      const options = shuffle(pronouns.map(p => ({text: p.text, isCorrect: p.text === pron.text})));
+      return {
+        prompt: `${pron.icon} _____ ${chosenNouns[i].noun} ${chosenNouns[i].icon}.`,
+        options: options
+      };
     });
   }
 
-  function showResult() {
-    const resultDiv = document.getElementById("result");
-    const percent = (score / totalQuestions) * 100;
-    if (percent >= 80) {
-      resultDiv.textContent = `Отличная работа! Вы ответили правильно на ${score} из ${totalQuestions}. Можно двигаться дальше.`;
-    } else {
-      resultDiv.textContent = `Вы ответили правильно на ${score} из ${totalQuestions}. Попробуйте повторить, чтобы улучшить результат.`;
-    }
-    document.getElementById("retry-btn").style.display = "inline-block";
+  let questions = createQuestions();
+
+  const container = document.getElementById("quiz-container");
+  const progressDiv = document.getElementById("progress");
+  const retryBtn = document.getElementById("retry-btn");
+  const resultDiv = document.getElementById("result");
+
+  function showQuestion() {
+    container.innerHTML = "";
+    resultDiv.textContent = "";
+    retryBtn.style.display = "none";
+
+    const q = questions[currentQuestionIndex];
+    const div = document.createElement("div");
+    div.className = "question";
+
+    const p = document.createElement("p");
+    p.textContent = `Вопрос ${currentQuestionIndex + 1} из ${pronouns.length} (Раунд ${currentRound} из ${totalRounds})`;
+    div.appendChild(p);
+
+    const promptP = document.createElement("p");
+    promptP.style.fontWeight = "bold";
+    promptP.textContent = q.prompt;
+    div.appendChild(promptP);
+
+    const optionsDiv = document.createElement("div");
+    optionsDiv.className = "options";
+
+    q.options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.textContent = opt.text;
+      btn.onclick = () => {
+        if (btn.disabled) return;
+        // Блокируем все кнопки
+        Array.from(optionsDiv.children).forEach(b => b.disabled = true);
+        if (opt.isCorrect) {
+          btn.classList.add("correct");
+          score++;
+        } else {
+          btn.classList.add("incorrect");
+          // Подсвечиваем правильный
+          Array.from(optionsDiv.children).forEach(b => {
+            if (b.textContent === q.options.find(o => o.isCorrect).text) {
+              b.classList.add("correct");
+            }
+          });
+        }
+
+        // Переходим к следующему вопросу через 1.2 секунды
+        setTimeout(() => {
+          currentQuestionIndex++;
+          if (currentQuestionIndex < pronouns.length) {
+            showQuestion();
+          } else {
+            if (currentRound < totalRounds) {
+              retryBtn.style.display = "inline-block";
+              progressDiv.textContent = `Раунд ${currentRound} завершён. Правильных ответов: ${score} из ${pronouns.length * currentRound}. Нажмите "Следующий раунд".`;
+            } else {
+              showFinalResult();
+            }
+          }
+        }, 1200);
+      };
+      optionsDiv.appendChild(btn);
+    });
+
+    div.appendChild(optionsDiv);
+    container.appendChild(div);
+
+    // Обновляем прогресс
+    progressDiv.textContent = `Вопрос ${currentQuestionIndex + 1} из ${pronouns.length} (Раунд ${currentRound} из ${totalRounds})`;
   }
 
-  document.getElementById("retry-btn").onclick = generateQuiz;
+  function showFinalResult() {
+    container.innerHTML = "";
+    progressDiv.textContent = "";
+    retryBtn.style.display = "none";
+
+    const totalQuestions = pronouns.length * totalRounds;
+    const percent = Math.round((score / totalQuestions) * 100);
+
+    if (percent >= 80) {
+      resultDiv.textContent = `Отличная работа! Вы ответили правильно на ${score} из ${totalQuestions} (${percent}%). Можно двигаться дальше.`;
+    } else {
+      resultDiv.textContent = `Вы ответили правильно на ${score} из ${totalQuestions} (${percent}%). Попробуйте повторить, чтобы улучшить результат.`;
+      retryBtn.style.display = "inline-block";
+      retryBtn.textContent = "Начать заново";
+    }
+  }
+
+  retryBtn.onclick = () => {
+    if (currentRound < totalRounds) {
+      currentRound++;
+      currentQuestionIndex = 0;
+      questions = createQuestions();
+      retryBtn.style.display = "none";
+      showQuestion();
+    } else {
+      // Сброс
+      currentRound = 1;
+      currentQuestionIndex = 0;
+      score = 0;
+      retryBtn.textContent = "Следующий раунд";
+      questions = createQuestions();
+      resultDiv.textContent = "";
+      showQuestion();
+    }
+  };
 
   // Запуск
-  generateQuiz();
+  showQuestion();
 </script>
 </body>
 </html>
